@@ -12,17 +12,19 @@
       "output_sha256": "b468197ddcba6547db8dda2efc3cd29f524f57992756aa813142b5531b2fd78d",
       "output_size": 23203840,
       "patch_encoding": "binary"
-    },
+    }
+  ],
+  "pending": [
     {
       "input_name": "Data0.pak",
+      "reason": "The validated CJPD1 payload must be uploaded without text/base64 transport conversion.",
       "original_sha256": "0debd38c1560830486d8f7bdecf3806324e4f6357f1353ea0058b47bdfe8aa3b",
       "original_size": 9343518,
-      "patch": "patches/verified/Data0.build15.cjpd",
-      "patch_sha256": "b34d7c851f66db22ec8361935f388f0db7bf840d43ccd3f6afcc5c83639f1148",
-      "patch_size": 166733,
+      "required_patch_name": "patches/verified/Data0.build15.cjpd",
+      "required_patch_sha256": "b34d7c851f66db22ec8361935f388f0db7bf840d43ccd3f6afcc5c83639f1148",
+      "required_patch_size": 166733,
       "output_sha256": "ffa18821657e8f25063897a28730a03fb962abf22d572fb3d4fdd83772db0eab",
-      "output_size": 9350103,
-      "patch_encoding": "binary"
+      "output_size": 9350103
     }
   ]
 }

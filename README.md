@@ -2,42 +2,25 @@
 
 Deterministic source patcher for the **Call of Juarez: Gunslinger Enhanced PC Patch**.
 
-This repository does **not** redistribute the retail game executable or `Data0.pak`. It contains compact CJPD1 binary deltas and a standard-library Python patcher that reconstructs the validated **Build 15** from unmodified retail files.
+This repository does **not** redistribute the retail game executable or `Data0.pak`.
 
-## Required retail files
+## Reproducibility status
 
-Point the patcher at a directory containing these original files under their normal game names:
+The Build 15 reconstruction was verified locally against the supplied retail originals and reference Build 15 files:
 
-- `CoJGunslinger.exe`
-- `Data0.pak`
+- `CoJGunslinger.exe`: byte-for-byte identical
+- `Data0.pak`: byte-for-byte identical
 
-The patcher refuses to run unless both files match the exact retail SHA-256 values recorded in `HASHES.json`.
+The EXE CJPD1 delta is present in the repository and is reproducible directly.
 
-## Build
+The validated Data0 CJPD1 delta is **166,733 bytes** with SHA-256:
 
-Python 3.8+ is sufficient. No external packages are required.
+`b34d7c851f66db22ec8361935f388f0db7bf840d43ccd3f6afcc5c83639f1148`
 
-```bash
-python patcher.py --game-dir "PATH_TO_GAME_FILES"
-```
+It is intentionally not committed yet because the current connector text/base64 transport altered or truncated binary data during upload tests. A corrupted payload is not accepted as source of truth.
 
-By default, reconstructed files are written to `./build15/`.
+Expected Data0 destination once uploaded without conversion:
 
-To replace verified originals directly:
+`patches/verified/Data0.build15.cjpd`
 
-```bash
-python patcher.py --game-dir "PATH_TO_GAME_FILES" --in-place
-```
-
-## Reproducibility
-
-The patcher verifies the retail input hash, patch payload hash, reconstructed size and final SHA-256.
-
-Expected Build 15 outputs:
-
-- `CoJGunslinger.exe`: `b468197ddcba6547db8dda2efc3cd29f524f57992756aa813142b5531b2fd78d`
-- `Data0.pak`: `ffa18821657e8f25063897a28730a03fb962abf22d572fb3d4fdd83772db0eab`
-
-The CJPD1 payloads contain only the binary delta required to transform the user's verified retail files. Unchanged data is copied from those local originals.
-
-See `VERIFY_REPORT.txt` for the byte-for-byte verification performed against the supplied Build 15 reference files.
+See `HASHES.json` and `VERIFY_REPORT.txt` for exact retail and Build 15 hashes.
