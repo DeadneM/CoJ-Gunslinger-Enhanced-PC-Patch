@@ -1,0 +1,6 @@
+# Retail game files are required locally but must not be committed.
+CoJGunslinger.exe
+Data0.pak
+
+# Reconstructed outputs
+build15/
