@@ -6,30 +6,23 @@
       "input_name": "CoJGunslinger.exe",
       "original_sha256": "ca1c4766900feb867372e0e2e87eb5adb92ca26ee537598a034ed7be1313d93c",
       "original_size": 23197992,
-      "patch": "patches/CoJGunslinger.build15.cjpd.b85",
+      "patch": "patches/verified/CoJGunslinger.build15.cjpd",
       "patch_sha256": "2403e33f062e6f780ab08c2eb3c5dce825788a50137e6066e99eb0a44d8a7cd8",
       "patch_size": 11718,
       "output_sha256": "b468197ddcba6547db8dda2efc3cd29f524f57992756aa813142b5531b2fd78d",
       "output_size": 23203840,
-      "patch_encoding": "base85"
+      "patch_encoding": "binary"
     },
     {
       "input_name": "Data0.pak",
       "original_sha256": "0debd38c1560830486d8f7bdecf3806324e4f6357f1353ea0058b47bdfe8aa3b",
       "original_size": 9343518,
+      "patch": "patches/verified/Data0.build15.cjpd",
       "patch_sha256": "b34d7c851f66db22ec8361935f388f0db7bf840d43ccd3f6afcc5c83639f1148",
       "patch_size": 166733,
       "output_sha256": "ffa18821657e8f25063897a28730a03fb962abf22d572fb3d4fdd83772db0eab",
       "output_size": 9350103,
-      "patch_encoding": "base85",
-      "patch_parts": [
-        "patches/Data0.build15.cjpd.part01.b85",
-        "patches/Data0.build15.cjpd.part02.b85",
-        "patches/Data0.build15.cjpd.part03.b85",
-        "patches/Data0.build15.cjpd.part04.b85",
-        "patches/Data0.build15.cjpd.part05.b85",
-        "patches/Data0.build15.cjpd.part06.b85"
-      ]
+      "patch_encoding": "binary"
     }
   ]
 }
