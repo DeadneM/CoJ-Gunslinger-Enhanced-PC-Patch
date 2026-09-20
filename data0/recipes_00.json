@@ -1,0 +1,6 @@
+{
+  "data/settings/defaultvideoquality.scr":{"base_transform":"raw","ops":[["copy",0,32],["text","VisRange(10.00, 10.00)\r\nFiltering(\"AnisotropicTrilinear\")\r\n"],["copy",34,36],["text","ShadowMapSize(4096)\r\nSpotShadowMapSize(4096)\r\n"],["copy",38,43],["text","FXFadeLevel(0)\r\n"],["copy",44,48]]},
+  "data/menu/scr/uigamemoviebackground.xui":{"base_transform":"raw","ops":[["copy",0,7660],["text","<Scale>0.650000,0.650000,1.000000</Scale>\r\n<Pivot>640.000000,720.000000,0.000000</Pivot>\r\n"],["copy",7660,8104]]},
+  "data/menu/scr/menuvariablescheat.xui":{"base_transform":"raw","ops":[["copy",0,31],["text","<Visual>DevListBoxHtmlV</Visual>\r\n"],["copy",32,45],["text","<Visual>DevListBoxHtmlV</Visual>\r\n"],["copy",46,58],["text","<Visual>DevListBoxHtmlV</Visual>\r\n"],["copy",59,185]]},
+  "data/menu/scr/menustartlevel.xui":{"base_transform":"raw","ops":[["copy",0,57],["text","<Visual>DevListBoxHtmlV</Visual>\r\n"],["copy",58,126]]}
+}
