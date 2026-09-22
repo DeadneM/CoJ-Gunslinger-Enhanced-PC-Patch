@@ -59,6 +59,19 @@ It:
 
 Because the tool patches an executable and a game archive, automated malware scanners may treat the packaged patcher conservatively. The complete reconstruction source and build workflow are provided here for review.
 
+## Patcher versioning
+
+Patcher versions follow the same cumulative integer build number as the mod.
+
+For Build 44:
+
+- GitHub Release tag: `v44`
+- release asset: `COJ_Gunslinger_Patcher_Build44.exe`
+- Windows file/product version: `Build 44`
+- the console header reports `Latest cumulative build: 44`
+
+The source-of-truth release number is `release/VERSION`. A release is published only when that file changes, so ordinary source/documentation commits do not create extra public releases.
+
 ## Validated Build 44 hashes
 
 | File | SHA-256 |
