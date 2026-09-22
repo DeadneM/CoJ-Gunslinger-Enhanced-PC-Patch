@@ -41,7 +41,7 @@ jobs:
             --clean `
             --onefile `
             --console `
-            --name COJ_Gunslinger_Patcher_44 `
+            --name COJ_Gunslinger_Patcher `
             --paths . `
             --add-data "HASHES.json;." `
             --add-data "data0;data0" `
@@ -52,12 +52,12 @@ jobs:
 
       - name: SHA-256
         shell: pwsh
-        run: Get-FileHash dist/COJ_Gunslinger_Patcher_44.exe -Algorithm SHA256 | Format-List
+        run: Get-FileHash dist/COJ_Gunslinger_Patcher.exe -Algorithm SHA256 | Format-List
 
       - name: Upload patcher
         uses: actions/upload-artifact@v4
         with:
           name: COJ_Gunslinger_Patcher_44
-          path: dist/COJ_Gunslinger_Patcher_44.exe
+          path: dist/COJ_Gunslinger_Patcher.exe
           if-no-files-found: error
           compression-level: 0
