@@ -1,0 +1,63 @@
+name: Build Windows Patcher
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "installer/**"
+      - "patcher.py"
+      - "patcher_build44.py"
+      - "HASHES.json"
+      - "data0/**"
+      - "build44/**"
+      - "patches/verified/**"
+      - ".github/workflows/build-patcher.yml"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Install PyInstaller
+        run: python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+
+      - name: Build cumulative Build 44 patcher
+        shell: pwsh
+        run: |
+          pyinstaller `
+            --noconfirm `
+            --clean `
+            --onefile `
+            --console `
+            --name COJ_Gunslinger_Patcher_44 `
+            --paths . `
+            --add-data "HASHES.json;." `
+            --add-data "data0;data0" `
+            --add-data "build44;build44" `
+            --add-data "patches/verified/CoJGunslinger.build15.cjpd;patches/verified" `
+            --add-data "patches/verified/CoJGunslinger.build44_from_build15.cjpd.b64;patches/verified" `
+            installer/COJ_Gunslinger_Patcher.py
+
+      - name: SHA-256
+        shell: pwsh
+        run: Get-FileHash dist/COJ_Gunslinger_Patcher_44.exe -Algorithm SHA256 | Format-List
+
+      - name: Upload patcher
+        uses: actions/upload-artifact@v4
+        with:
+          name: COJ_Gunslinger_Patcher_44
+          path: dist/COJ_Gunslinger_Patcher_44.exe
+          if-no-files-found: error
+          compression-level: 0
