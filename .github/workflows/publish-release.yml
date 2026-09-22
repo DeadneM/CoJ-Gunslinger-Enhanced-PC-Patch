@@ -79,7 +79,10 @@ jobs:
           $notes = @"
           # Enhanced PC Patch Build $env:VERSION
 
-          Cumulative Windows patcher for Call of Juarez: Gunslinger on Steam and GOG.\n\n          - Automatically detects the supported Steam or GOG edition\n          - Target: validated Build $env:VERSION
+          Cumulative Windows patcher for Call of Juarez: Gunslinger on Steam and GOG.
+
+          - Automatically detects the supported Steam or GOG edition
+          - Target: validated Build $env:VERSION
           - Verifies supported input hashes before modification
           - Creates backups before installation
           - Verifies the reconstructed output before and after replacement
