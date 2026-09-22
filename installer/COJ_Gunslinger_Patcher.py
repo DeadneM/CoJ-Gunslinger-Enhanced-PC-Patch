@@ -116,52 +116,58 @@ def build_steam_from_build15(
     return out_exe, out_data
 
 
-def apply_gog_exe_patch(source: bytes, patch_b64: str) -> bytes:
-    packed = base64.b64decode(patch_b64)
-    try:
-        raw = zlib.decompress(packed)
-    except zlib.error as exc:
-        # The verified GOG delta currently carries a bad zlib Adler-32 trailer.
-        # Its DEFLATE payload is still usable. Fall back only for that exact
-        # wrapper-check failure, then rely on the strict CJPG1 parser and the
-        # final edition-specific SHA-256 verification before installation.
-        if "incorrect data check" not in str(exc):
-            raise
-        if (
-            len(packed) < 6
-            or (packed[0] & 0x0F) != 8
-            or ((packed[0] << 8) | packed[1]) % 31 != 0
-        ):
-            raise ValueError("Invalid GOG EXE zlib wrapper") from exc
-        raw = zlib.decompress(packed[2:-4], -zlib.MAX_WBITS)
+def apply_cojdp1(source: bytes, packed: bytes) -> bytes:
+    raw = zlib.decompress(packed)
+    if raw[:6] != b"COJDP1":
+        raise ValueError("Invalid COJDP1 patch format")
 
-    if raw[:5] != b"CJPG1":
-        raise ValueError("Invalid GOG EXE patch format")
-    pos = 5
-    source_size, target_size, count = struct.unpack_from("<III", raw, pos)
-    pos += 12
-    if len(source) != source_size:
-        raise ValueError("Unexpected original GOG EXE size")
+    pos = 6
+    if len(raw) < pos + 88:
+        raise ValueError("Truncated COJDP1 header")
 
-    out = bytearray(source)
+    source_size, target_size = struct.unpack_from("<QQ", raw, pos)
+    pos += 16
+    source_sha = raw[pos:pos + 32]
+    pos += 32
+    target_sha = raw[pos:pos + 32]
+    pos += 32
+    _block_size, count = struct.unpack_from("<II", raw, pos)
+    pos += 8
+
+    if len(source) != source_size or hashlib.sha256(source).digest() != source_sha:
+        raise ValueError("COJDP1 source verification failed")
+
+    out = bytearray()
     for _ in range(count):
-        offset, length = struct.unpack_from("<II", raw, pos)
-        pos += 8
-        out[offset:offset + length] = raw[pos:pos + length]
-        pos += length
+        if pos >= len(raw):
+            raise ValueError("Truncated COJDP1 instruction stream")
+        opcode = raw[pos]
+        pos += 1
 
-    tail_length = struct.unpack_from("<I", raw, pos)[0]
-    pos += 4
-    if pos + tail_length > len(raw):
-        raise ValueError("Truncated GOG EXE patch tail")
-    out.extend(raw[pos:pos + tail_length])
-    pos += tail_length
+        if opcode == 0:
+            if pos + 12 > len(raw):
+                raise ValueError("Truncated COJDP1 COPY instruction")
+            offset, length = struct.unpack_from("<QI", raw, pos)
+            pos += 12
+            if offset + length > len(source):
+                raise ValueError("Invalid COJDP1 COPY range")
+            out.extend(source[offset:offset + length])
+        elif opcode == 1:
+            if pos + 4 > len(raw):
+                raise ValueError("Truncated COJDP1 DATA instruction")
+            length = struct.unpack_from("<I", raw, pos)[0]
+            pos += 4
+            if pos + length > len(raw):
+                raise ValueError("Truncated COJDP1 DATA payload")
+            out.extend(raw[pos:pos + length])
+            pos += length
+        else:
+            raise ValueError("Invalid COJDP1 opcode")
 
-    # CJPG1 deltas may carry trailing generator metadata after the patch body.
-    # It is not part of the reconstructed executable. Safety does not depend
-    # on accepting this suffix: verify_target() requires the exact known GOG
-    # SHA-256 before anything is installed.
-    del out[target_size:]
+    if pos != len(raw):
+        raise ValueError("Unexpected trailing COJDP1 data")
+    if len(out) != target_size or hashlib.sha256(out).digest() != target_sha:
+        raise ValueError("COJDP1 target verification failed")
     return bytes(out)
 
 
@@ -170,10 +176,8 @@ def build_gog_from_retail(exe: Path, data0: Path, temp: Path) -> tuple[Path, Pat
     out_dir = temp / "gog_build45"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    patch_b64 = (
-        root / "gog/build44/CoJGunslinger.gog44.cjpgz.b64"
-    ).read_text(encoding="ascii")
-    exe_target = apply_gog_exe_patch(exe.read_bytes(), patch_b64)
+    exe_patch = root / "gog/build45/CoJGunslinger.gog45.cojdp1.zlib"
+    exe_target = apply_cojdp1(exe.read_bytes(), exe_patch.read_bytes())
 
     # The 19 patch-modified source records are byte-identical between the
     # original Steam and GOG archives. The verified semantic recipe therefore
