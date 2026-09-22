@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - "release/VERSION"
-      - ".github/workflows/publish-release.yml"
   workflow_dispatch:
 
 permissions:
@@ -58,6 +57,7 @@ jobs:
             --add-data "HASHES.json;." `
             --add-data "data0;data0" `
             --add-data "build44;build44" `
+            --add-data "gog;gog" `
             --add-data "patches/verified/CoJGunslinger.build15.cjpd;patches/verified" `
             --add-data "patches/verified/CoJGunslinger.build44_from_build15.cjpd.b64;patches/verified" `
             installer/COJ_Gunslinger_Patcher.py
@@ -79,9 +79,7 @@ jobs:
           $notes = @"
           # Enhanced PC Patch Build $env:VERSION
 
-          Cumulative Windows patcher for Call of Juarez: Gunslinger.
-
-          - Target: validated Build $env:VERSION
+          Cumulative Windows patcher for Call of Juarez: Gunslinger on Steam and GOG.\n\n          - Automatically detects the supported Steam or GOG edition\n          - Target: validated Build $env:VERSION
           - Verifies supported input hashes before modification
           - Creates backups before installation
           - Verifies the reconstructed output before and after replacement
