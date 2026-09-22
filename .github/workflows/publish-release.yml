@@ -1,10 +1,6 @@
 name: Publish Patcher Release
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "release/VERSION"
   workflow_dispatch:
 
 permissions:
@@ -18,17 +14,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Read and validate release version
+      - name: Read and validate installer designation
         shell: pwsh
         run: |
-          $version = (Get-Content release/VERSION -Raw).Trim()
-          if ($version -notmatch '^\d+$') { throw "release/VERSION must contain an integer build number." }
-          $source = Get-Content installer/COJ_Gunslinger_Patcher.py -Raw
-          if ($source -notmatch "LATEST_BUILD\s*=\s*$version(\D|$)") {
-            throw "release/VERSION ($version) does not match LATEST_BUILD in the patcher."
+          $manifest = Get-Content HASHES_BUILD45.json -Raw | ConvertFrom-Json
+
+          $designation = [string]$manifest.designation
+          $patcher = [int]$manifest.versions.patcher
+          $steam = [int]$manifest.versions.steam
+          $gog = [int]$manifest.versions.gog
+          $expected = "v$($patcher)Pv$($steam)Sv$($gog)G"
+
+          if ($designation -ne $expected) {
+            throw "Manifest designation mismatch: expected $expected, got $designation"
           }
-          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          "TAG=v$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          if ($designation -notmatch '^v\d+Pv\d+Sv\d+G$') {
+            throw "Invalid installer designation: $designation"
+          }
+
+          $exeName = "COJ_Gunslinger_Patcher_$designation"
+          "DESIGNATION=$designation" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "PATCHER_VERSION=$patcher" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "STEAM_VERSION=$steam" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "GOG_VERSION=$gog" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "TAG=$designation" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "EXE_NAME=$exeName" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,32 +52,24 @@ jobs:
       - name: Generate Windows version metadata
         run: python installer/make_version_info.py
 
-      - name: Build release executable
+      - name: Build standalone release executable
         shell: pwsh
         run: |
-          $name = "COJ_Gunslinger_Patcher_Build$env:VERSION"
           pyinstaller `
             --noconfirm `
             --clean `
             --onefile `
             --console `
-            --name $name `
+            --name "$env:EXE_NAME" `
             --version-file installer/version_info.txt `
-            --paths . `
-            --add-data "HASHES.json;." `
-            --add-data "data0;data0" `
-            --add-data "build44;build44" `
-            --add-data "gog;gog" `
-            --add-data "patches/verified/CoJGunslinger.build15.cjpd;patches/verified" `
-            --add-data "patches/verified/CoJGunslinger.build44_from_build15.cjpd.b64;patches/verified" `
             installer/COJ_Gunslinger_Patcher.py
 
       - name: Create SHA-256 manifest
         shell: pwsh
         run: |
-          $exe = "dist/COJ_Gunslinger_Patcher_Build$env:VERSION.exe"
+          $exe = "dist/$env:EXE_NAME.exe"
           $hash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  COJ_Gunslinger_Patcher_Build$env:VERSION.exe" | Set-Content dist/SHA256SUMS.txt -Encoding ascii
+          "$hash  $env:EXE_NAME.exe" | Set-Content dist/SHA256SUMS.txt -Encoding ascii
           Get-Content dist/SHA256SUMS.txt
 
       - name: Publish GitHub Release
@@ -75,25 +77,28 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $exe = "dist/COJ_Gunslinger_Patcher_Build$env:VERSION.exe"
+          $exe = "dist/$env:EXE_NAME.exe"
           $notes = @"
-          # Enhanced PC Patch Build $env:VERSION
+          # Enhanced PC Patch $env:DESIGNATION
 
-          Cumulative Windows patcher for Call of Juarez: Gunslinger on Steam and GOG.
+          Unified Windows patcher for Call of Juarez: Gunslinger.
 
-          - Automatically detects the supported Steam or GOG edition
-          - Target: validated Build $env:VERSION
-          - Verifies supported input hashes before modification
+          - Patcher generation: v$env:PATCHER_VERSION
+          - Steam payload: v$env:STEAM_VERSION
+          - GOG payload: v$env:GOG_VERSION
+          - Automatically detects supported Steam or GOG source files
+          - Uses embedded direct COJDP1 deltas
+          - Verifies exact source hashes before reconstruction
           - Creates backups before installation
-          - Verifies the reconstructed output before and after replacement
-          - Source and build workflow are included in this repository
+          - Verifies target hashes before and after replacement
+          - Contains no retail game executable or retail Data0.pak
 
-          The patcher contains no retail game executable or Data0.pak.
+          Source and build workflow are included in this repository.
           "@
 
           gh release view $env:TAG --repo ${{ github.repository }} *> $null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $env:TAG $exe dist/SHA256SUMS.txt --clobber --repo ${{ github.repository }}
           } else {
-            gh release create $env:TAG $exe dist/SHA256SUMS.txt --repo ${{ github.repository }} --title "Enhanced PC Patch Build $env:VERSION" --notes $notes
+            gh release create $env:TAG $exe dist/SHA256SUMS.txt --repo ${{ github.repository }} --title "Enhanced PC Patch $env:DESIGNATION" --notes $notes
           }
