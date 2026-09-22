@@ -12,7 +12,11 @@ import traceback
 import zlib
 from pathlib import Path
 
-LATEST_BUILD = 45
+PATCHER_VERSION = 2
+STEAM_VERSION = 45
+GOG_VERSION = 45
+DESIGNATION = f"v{PATCHER_VERSION}Pv{STEAM_VERSION}Sv{GOG_VERSION}G"
+EDITION_VERSIONS = {"Steam": STEAM_VERSION, "GOG": GOG_VERSION}
 
 STEAM_RETAIL_EXE = "ca1c4766900feb867372e0e2e87eb5adb92ca26ee537598a034ed7be1313d93c"
 STEAM_RETAIL_DATA0 = "0debd38c1560830486d8f7bdecf3806324e4f6357f1353ea0058b47bdfe8aa3b"
@@ -42,18 +46,10 @@ PATCH_FILES = {
 }
 
 
-def bundle_root() -> Path:
-    return Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
-
-
 def app_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
     return Path.cwd().resolve()
-
-
-def sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
 
 
 def sha256_file(path: Path) -> str:
@@ -160,7 +156,7 @@ def verify_target(edition: str, exe: Path, data0: Path) -> None:
     }[edition]
     if hashes != expected:
         raise ValueError(
-            f"Final {edition} Build {LATEST_BUILD} verification failed.\n"
+            f"Final {edition} v{EDITION_VERSIONS[edition]} verification failed.\n"
             f"EXE:   {hashes[0]}\nData0: {hashes[1]}"
         )
 
@@ -176,7 +172,7 @@ def pause() -> None:
 def main() -> int:
     print("=" * 68)
     print(" Call of Juarez: Gunslinger - Enhanced PC Patch")
-    print(f" Latest cumulative build: {LATEST_BUILD} | Steam + GOG")
+    print(f" {DESIGNATION} | Patcher v{PATCHER_VERSION} | Steam v{STEAM_VERSION} | GOG v{GOG_VERSION}")
     print("=" * 68)
     try:
         root = app_dir()
@@ -186,10 +182,10 @@ def main() -> int:
         eh, dh = sha256_file(exe), sha256_file(data0)
 
         if (eh, dh) == (STEAM_TARGET_EXE, STEAM_TARGET_DATA0):
-            print(f"[OK] Steam Build {LATEST_BUILD} is already installed. Nothing to do.")
+            print(f"[OK] Steam v{STEAM_VERSION} is already installed. Nothing to do.")
             return 0
         if (eh, dh) == (GOG_TARGET_EXE, GOG_TARGET_DATA0):
-            print(f"[OK] GOG Build {LATEST_BUILD} is already installed. Nothing to do.")
+            print(f"[OK] GOG v{GOG_VERSION} is already installed. Nothing to do.")
             return 0
 
         if (eh, dh) == (STEAM_RETAIL_EXE, STEAM_RETAIL_DATA0):
@@ -215,34 +211,38 @@ def main() -> int:
 
         with tempfile.TemporaryDirectory(prefix="coj_patch_", dir=str(root)) as td:
             temp = Path(td)
-            print(f"[ .. ] Building cumulative {edition} Build {LATEST_BUILD}...")
+            print(f"[ .. ] Building {edition} v{EDITION_VERSIONS[edition]} with patcher v{PATCHER_VERSION}...")
             new_exe, new_data = rebuild_pair(source_kind, exe, data0, temp)
 
             print("[ .. ] Verifying patched files before installation...")
             verify_target(edition, new_exe, new_data)
-            print(f"[OK] {edition} Build {LATEST_BUILD} hashes verified.")
+            print(f"[OK] {edition} v{EDITION_VERSIONS[edition]} hashes verified.")
 
             staged_exe = exe.with_name(exe.name + ".PatchNew")
             staged_data = data0.with_name(data0.name + ".PatchNew")
-            shutil.copy2(new_exe, staged_exe)
-            shutil.copy2(new_data, staged_data)
-            verify_target(edition, staged_exe, staged_data)
-
-            rollback_exe = temp / "rollback_CoJGunslinger.exe"
-            rollback_data = temp / "rollback_Data0.pak"
-            shutil.copy2(exe, rollback_exe)
-            shutil.copy2(data0, rollback_data)
             try:
-                os.replace(staged_exe, exe)
-                os.replace(staged_data, data0)
-            except Exception:
-                shutil.copy2(rollback_exe, exe)
-                shutil.copy2(rollback_data, data0)
-                raise
+                shutil.copy2(new_exe, staged_exe)
+                shutil.copy2(new_data, staged_data)
+                verify_target(edition, staged_exe, staged_data)
+
+                rollback_exe = temp / "rollback_CoJGunslinger.exe"
+                rollback_data = temp / "rollback_Data0.pak"
+                shutil.copy2(exe, rollback_exe)
+                shutil.copy2(data0, rollback_data)
+                try:
+                    os.replace(staged_exe, exe)
+                    os.replace(staged_data, data0)
+                except Exception:
+                    shutil.copy2(rollback_exe, exe)
+                    shutil.copy2(rollback_data, data0)
+                    raise
+            finally:
+                staged_exe.unlink(missing_ok=True)
+                staged_data.unlink(missing_ok=True)
 
         verify_target(edition, exe, data0)
         print("=" * 68)
-        print(f"[SUCCESS] {edition} Enhanced PC Patch Build {LATEST_BUILD} installed.")
+        print(f"[SUCCESS] {DESIGNATION} installed for {edition} v{EDITION_VERSIONS[edition]}.")
         print("          Final SHA-256 verification passed.")
         print("=" * 68)
         return 0
