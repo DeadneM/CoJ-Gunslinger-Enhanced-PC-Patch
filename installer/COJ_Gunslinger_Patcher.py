@@ -152,10 +152,15 @@ def apply_gog_exe_patch(source: bytes, patch_b64: str) -> bytes:
 
     tail_length = struct.unpack_from("<I", raw, pos)[0]
     pos += 4
+    if pos + tail_length > len(raw):
+        raise ValueError("Truncated GOG EXE patch tail")
     out.extend(raw[pos:pos + tail_length])
     pos += tail_length
-    if pos != len(raw):
-        raise ValueError("Unexpected trailing GOG EXE patch data")
+
+    # CJPG1 deltas may carry trailing generator metadata after the patch body.
+    # It is not part of the reconstructed executable. Safety does not depend
+    # on accepting this suffix: verify_target() requires the exact known GOG
+    # SHA-256 before anything is installed.
     del out[target_size:]
     return bytes(out)
 
