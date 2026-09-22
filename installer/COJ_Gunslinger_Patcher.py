@@ -191,8 +191,18 @@ def main() -> int:
             shutil.copy2(new_data, staged_data)
             verify_build44(staged_exe, staged_data)
 
-            os.replace(staged_exe, exe)
-            os.replace(staged_data, data0)
+            # Preserve the exact current pair during the replacement window.
+            rollback_exe = temp / "rollback_CoJGunslinger.exe"
+            rollback_data = temp / "rollback_Data0.pak"
+            shutil.copy2(exe, rollback_exe)
+            shutil.copy2(data0, rollback_data)
+            try:
+                os.replace(staged_exe, exe)
+                os.replace(staged_data, data0)
+            except Exception:
+                shutil.copy2(rollback_exe, exe)
+                shutil.copy2(rollback_data, data0)
+                raise
 
         verify_build44(exe, data0)
         print("=" * 64)
