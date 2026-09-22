@@ -1,6 +1,16 @@
 # Windows patcher
 
-`COJ_Gunslinger_Patcher_Build45.exe` is the standalone installer for the cumulative Enhanced PC Patch. Build 45 uses one executable for the supported **Steam and GOG** editions.
+The active installer is the unified Steam + GOG patcher for the cumulative Enhanced PC Patch.
+
+Current version designation:
+
+`v2Pv45Sv45G`
+
+- patcher: **v2P**
+- Steam payload: **v45S**
+- GOG payload: **v45G**
+
+The installer version is independent from the game payload versions. A packaging-only change can therefore increment the patcher generation without implying that either gameplay payload changed.
 
 ## Detection
 
@@ -15,6 +25,22 @@ Accepted pairs:
 
 Mixed, unknown or previously modified pairs are refused.
 
+## Reconstruction
+
+The active installer embeds six compressed `COJDP1` direct deltas.
+
+Supported source paths:
+
+- Steam retail -> Steam v45
+- Steam Build 15 -> Steam v45
+- GOG retail -> GOG v45
+
+EXE and Data0 are patched independently.
+
+Each direct delta verifies its own expected source size/SHA-256 and target size/SHA-256. The installer also performs edition-level hash verification before staging and after final replacement.
+
+The historical semantic Build 15 / Build 44 reconstruction chain and the retired GOG CJPG1 experiment are preserved under `legacy/` for audit/history only. They are not part of the active installer path.
+
 ## Edition preservation
 
 The Steam path keeps Steam integration and the validated Steam payload.
@@ -23,12 +49,25 @@ The GOG path keeps the GOG entry point/platform integration and its four store-s
 
 ## Installation safety
 
-The patcher creates `.Backup` copies only after recognizing a supported pair. It reconstructs the edition-specific target in a temporary directory, verifies exact SHA-256 values, stages both files, keeps a rollback pair during replacement, and verifies the installed files again.
+The patcher creates `.Backup` copies only after recognizing a supported pair.
+
+It then:
+
+1. reconstructs the edition-specific target in a temporary directory;
+2. verifies exact SHA-256 target hashes;
+3. stages both files as temporary replacement files;
+4. keeps a fresh rollback pair during replacement;
+5. replaces the EXE and Data0;
+6. verifies the installed target hashes again.
 
 ## Building
 
-`.github/workflows/build-patcher.yml` builds the latest development artifact.
+`.github/workflows/build-patcher.yml` builds development artifacts.
 
-`.github/workflows/publish-release.yml` builds the versioned public executable when `release/VERSION` changes.
+`.github/workflows/publish-release.yml` publishes the public executable.
 
-Both workflows use Python 3.12 and PyInstaller. The packaged executable contains reconstruction code and compact patch metadata only. It contains no retail game EXE or retail `Data0.pak`.
+Both workflows use Python 3.12 and PyInstaller.
+
+The active patcher source already contains the compact direct-delta payloads. Legacy reconstruction assets therefore do not need to be packaged into the final executable. The workflow cleanup is intentionally handled as a separate repository-cleanup step.
+
+The packaged executable contains no retail game EXE or retail `Data0.pak`.
