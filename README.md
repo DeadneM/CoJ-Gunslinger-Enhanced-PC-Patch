@@ -97,7 +97,7 @@ Current designation:
 
 This prevents a packaging-only patcher revision from pretending that the Steam or GOG gameplay payload changed.
 
-The existing public v45 release/tag belongs to the older Build-number naming scheme and will be cleaned up only after the final patcher step.
+The release/tag naming scheme is the full designation, so the current distribution is `v2Pv45Sv45G`. The superseded `v45` packaging release is not part of the current distribution.
 
 ## Validated v45 hashes
 
@@ -149,7 +149,7 @@ docs/TECHNICAL_NOTES.md     Validated implementation and lineage notes
 release/                    Release metadata
 ```
 
-The older root-level reconstruction files are temporarily retained while the cleanup is performed step by step. Their authoritative historical copies are now under `legacy/`; they are not part of the active installer architecture.
+The retired reconstruction chains are kept only under `legacy/` for auditability and historical reference. They are not part of the active installer architecture or packaged patcher.
 
 Packaged mod ZIPs and retail game files are intentionally **not stored in this repository**. Public binaries are published through GitHub Releases / Nexus Mods.
 
