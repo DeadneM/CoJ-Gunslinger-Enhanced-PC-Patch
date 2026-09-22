@@ -36,3 +36,5 @@ Validated Build 44 hashes:
 GitHub Actions builds the Windows executable with PyInstaller. The workflow is `.github/workflows/build-patcher.yml` and publishes `COJ_Gunslinger_Patcher_44.exe` as a workflow artifact.
 
 This first implementation deliberately reuses the already verified deterministic Python reconstruction code. A later native implementation can replace the packaging layer without changing the patch data or final hashes.
+
+The executable is rebuilt automatically whenever the patcher or patch data changes on `main`.
