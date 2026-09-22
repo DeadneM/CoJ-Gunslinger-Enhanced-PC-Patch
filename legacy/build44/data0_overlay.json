@@ -1,0 +1,28 @@
+{
+  "entry": "data/menu/hud/hud.xui",
+  "recipe": {
+    "base_transform": "raw",
+    "ops": [
+      ["copy", 0, 9518],
+      ["text", "<Position>589.375000,456.000000,0.000000</Position>\r\n"],
+      ["text", "<Scale>0.550000,0.550000,1.000000</Scale>\r\n"],
+      ["copy", 9519, 17773],
+      ["text", "<Position>-25.000000,40.000000,0.000000</Position>\r\n"],
+      ["text", "<Scale>0.550000,0.550000,1.000000</Scale>\r\n"],
+      ["copy", 17775, 20526],
+      ["text", "<Position>1195.000000,35.000000,0.000000</Position>\r\n"],
+      ["text", "<Scale>0.550000,0.550000,1.000000</Scale>\r\n"],
+      ["copy", 20528, 22432],
+      ["text", "<Position>420.000000,392.000000,0.000000</Position>\r\n"],
+      ["copy", 22433, 27399],
+      ["text", "<Position>280.000031,0.000000,0.000000</Position>\r\n"],
+      ["copy", 27400, 32890]
+    ]
+  },
+  "metadata": {
+    "level": 6,
+    "enc_header_hex": "4734af8b8234f2e22c59f475",
+    "local": {"ver":20,"flag":1,"method":8,"mt":19055,"md":17089,"crc":1971770782,"cs":49932,"us":805836,"extra":"","tail":""},
+    "central": {"vm":0,"vn":20,"flag":1,"method":8,"mt":19055,"md":17089,"crc":1971770782,"cs":49932,"us":805836,"extra":"","comment":"","disk":0,"inta":1,"exta":0}
+  }
+}

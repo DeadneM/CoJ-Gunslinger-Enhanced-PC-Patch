@@ -1,0 +1,194 @@
+{
+  "data/settings/defaultvideoquality.scr": {
+    "level": 6,
+    "enc_header_hex": "fd6e820c745d7d1983d04acb",
+    "local": {
+      "ver": 20,
+      "flag": 0,
+      "method": 8,
+      "mt": 22929,
+      "md": 17063,
+      "crc": 3412905228,
+      "cs": 620,
+      "us": 1412,
+      "extra": "",
+      "tail": ""
+    },
+    "central": {
+      "vm": 0,
+      "vn": 20,
+      "flag": 0,
+      "method": 8,
+      "mt": 22929,
+      "md": 17063,
+      "crc": 3412905228,
+      "cs": 620,
+      "us": 1412,
+      "extra": "",
+      "comment": "d8fb9d",
+      "disk": 0,
+      "inta": 1,
+      "exta": 0
+    }
+  },
+  "data/menu/scr/uigamemoviebackground.xui": {
+    "level": 9,
+    "enc_header_hex": "53c4e1568a7437c4b4eff21e",
+    "local": {
+      "ver": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 19055,
+      "md": 17089,
+      "crc": 516152720,
+      "cs": 7362,
+      "us": 212307,
+      "extra": "",
+      "tail": ""
+    },
+    "central": {
+      "vm": 0,
+      "vn": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 19055,
+      "md": 17089,
+      "crc": 516152720,
+      "cs": 7362,
+      "us": 212307,
+      "extra": "",
+      "comment": "",
+      "disk": 0,
+      "inta": 1,
+      "exta": 0
+    }
+  },
+  "data/menu/scr/menuvariablescheat.xui": {
+    "level": 6,
+    "enc_header_hex": "52ce97bb3cefcb899f9a1260",
+    "local": {
+      "ver": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47565,
+      "md": 17046,
+      "crc": 1621656780,
+      "cs": 1063,
+      "us": 4547,
+      "extra": "",
+      "tail": ""
+    },
+    "central": {
+      "vm": 0,
+      "vn": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47565,
+      "md": 17046,
+      "crc": 1621656780,
+      "cs": 1063,
+      "us": 4547,
+      "extra": "",
+      "comment": "",
+      "disk": 0,
+      "inta": 1,
+      "exta": 0
+    }
+  },
+  "data/menu/scr/menustartlevel.xui": {
+    "level": 6,
+    "enc_header_hex": "2444f0f719edce5cb970ee26",
+    "local": {
+      "ver": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47565,
+      "md": 17046,
+      "crc": 647778223,
+      "cs": 710,
+      "us": 3009,
+      "extra": "",
+      "tail": ""
+    },
+    "central": {
+      "vm": 0,
+      "vn": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47565,
+      "md": 17046,
+      "crc": 647778223,
+      "cs": 710,
+      "us": 3009,
+      "extra": "",
+      "comment": "",
+      "disk": 0,
+      "inta": 1,
+      "exta": 0
+    }
+  },
+  "data/menu/scr/menuskin.xui": {
+    "level": 6,
+    "enc_header_hex": "2f63a47acd7aa0f86308420d",
+    "local": {
+      "ver": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47475,
+      "md": 17066,
+      "crc": 232441602,
+      "cs": 39936,
+      "us": 766553,
+      "extra": "",
+      "tail": ""
+    },
+    "central": {
+      "vm": 0,
+      "vn": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47475,
+      "md": 17066,
+      "crc": 232441602,
+      "cs": 39936,
+      "us": 766553,
+      "extra": "",
+      "comment": "",
+      "disk": 0,
+      "inta": 1,
+      "exta": 0
+    }
+  },
+  "data/menu/scr/menuprogresscheat.xui": {
+    "level": 6,
+    "enc_header_hex": "af8dd79e166e5216bc47cf41",
+    "local": {
+      "ver": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47565,
+      "md": 17046,
+      "crc": 1100344028,
+      "cs": 1107,
+      "us": 4676,
+      "extra": "",
+      "tail": ""
+    },
+    "central": {
+      "vm": 0,
+      "vn": 20,
+      "flag": 1,
+      "method": 8,
+      "mt": 47565,
+      "md": 17046,
+      "crc": 1100344028,
+      "cs": 1107,
+      "us": 4676,
+      "extra": "",
+      "comment": "",
+      "disk": 0,
+      "inta": 1,
+      "exta": 0
+    }
+  }
+}

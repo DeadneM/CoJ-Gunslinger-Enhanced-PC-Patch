@@ -1,0 +1,14 @@
+{
+  "data/inputs_def.scr": {
+    "level": 6,
+    "enc_header_hex": "70a797e728a7c19f30c7dd83",
+    "local": {"ver":20,"flag":9,"method":8,"mt":33757,"md":23854,"crc":2791315983,"cs":4111,"us":19215,"extra":"55540900034121a86a4121a86a75780b0001040000000004e9030000","tail":"504b07080f1a60a60f1000000f4b0000"},
+    "central": {"vm":798,"vn":20,"flag":9,"method":8,"mt":33757,"md":23854,"crc":2791315983,"cs":4111,"us":19215,"extra":"55540500034121a86a75780b0001040000000004e9030000","comment":"","disk":0,"inta":1,"exta":2175008768}
+  },
+  "data/menu/movies/intromovies.scr": {
+    "level": 6,
+    "enc_header_hex": "ecc3183b71d1d7b79c703d3e",
+    "local": {"ver":20,"flag":1,"method":8,"mt":47564,"md":17046,"crc":1052260489,"cs":427,"us":899,"extra":"","tail":""},
+    "central": {"vm":0,"vn":20,"flag":1,"method":8,"mt":47564,"md":17046,"crc":1052260489,"cs":427,"us":899,"extra":"","comment":"","disk":0,"inta":1,"exta":0}
+  }
+}
