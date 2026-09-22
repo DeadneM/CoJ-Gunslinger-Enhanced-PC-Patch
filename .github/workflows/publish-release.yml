@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "release/VERSION"
+      - ".github/workflows/publish-release.yml"
   workflow_dispatch:
 
 permissions:
@@ -93,5 +94,5 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             gh release upload $env:TAG $exe dist/SHA256SUMS.txt --clobber --repo ${{ github.repository }}
           } else {
-            gh release create $env:TAG $exe dist/SHA256SUMS.txt --repo ${{ github.repository }} --target ${{ github.sha }} --title "Enhanced PC Patch Build $env:VERSION" --notes $notes
+            gh release create $env:TAG $exe dist/SHA256SUMS.txt --repo ${{ github.repository }} --title "Enhanced PC Patch Build $env:VERSION" --notes $notes
           }
