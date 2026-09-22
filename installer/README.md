@@ -1,40 +1,30 @@
 # Windows patcher
 
-`COJ_Gunslinger_Patcher.exe` is the first standalone Windows installer for the cumulative Enhanced PC Patch.
+`COJ_Gunslinger_Patcher.exe` is the standalone Windows installer for the cumulative Enhanced PC Patch. The current validated target is **Build 44**.
 
-## Current target
+## Accepted inputs
 
-The patcher always targets the latest validated cumulative build. The current target is **Build 44**.
+- exact original Steam `CoJGunslinger.exe` + `Data0.pak`;
+- exact Enhanced PC Patch Build 15 pair;
+- exact Build 44 pair, detected as already installed.
 
-Supported input pairs:
+Unknown or mixed files are refused before modification.
 
-- original Steam `CoJGunslinger.exe` + original Steam `Data0.pak`
-- exact Enhanced PC Patch Build 15 pair
-- Build 44 itself (detected as already installed)
+## Installation safety
 
-Unknown or mixed files are refused before patching.
+The patcher hashes both files first, creates `.Backup` copies only for recognized inputs, reconstructs the target in a temporary directory, verifies the exact Build 44 SHA-256 values, stages the pair, performs transactional replacement, and verifies the installed files again.
 
-## Safety model
-
-The patcher:
-
-1. finds `CoJGunslinger.exe` next to itself and `Data0.pak` in either `coj4\\Data0.pak` or the same directory;
-2. hashes both files before doing anything;
-3. creates `.Backup` copies only after the input pair is recognized;
-4. reconstructs Build 44 in a temporary directory;
-5. verifies the exact validated Build 44 SHA-256 hashes before installation;
-6. stages and verifies the new files again before replacing the originals;
-7. verifies the installed files one final time.
-
-Validated Build 44 hashes:
+Validated Build 44:
 
 - EXE: `125a3b088e502049913d7a6d20f0ad76d7a0e5fe086d14bb257c4d0798ca5844`
 - Data0: `55cab794160a244ef3db3abfa0e3beb23643ebb20c3d95831d0c553905372744`
 
-## Build
+## Building the executable
 
-GitHub Actions builds the Windows executable with PyInstaller. The workflow is `.github/workflows/build-patcher.yml` and publishes `COJ_Gunslinger_Patcher.exe` as a workflow artifact.
+The repository workflow `.github/workflows/build-patcher.yml` builds the patcher on `windows-latest` with Python 3.12 and PyInstaller.
 
-This first implementation deliberately reuses the already verified deterministic Python reconstruction code. A later native implementation can replace the packaging layer without changing the patch data or final hashes.
+The generated executable is:
 
-The executable is rebuilt automatically whenever the patcher or patch data changes on `main`.
+`COJ_Gunslinger_Patcher.exe`
+
+The executable embeds only the reconstruction code, compact patch data and metadata contained in this repository. It does not embed the retail game EXE or retail `Data0.pak`.
