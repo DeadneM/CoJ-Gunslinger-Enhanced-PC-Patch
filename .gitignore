@@ -1,6 +1,27 @@
-# Retail game files are required locally but must not be committed.
+# Proprietary retail game files
 CoJGunslinger.exe
 Data0.pak
 
-# Reconstructed outputs
+# Reconstructed / packaged outputs
 build15/
+dist/
+build/
+*.exe
+*.zip
+*.7z
+*.rar
+
+# Installer backups and staging files
+*.Backup
+*.PatchNew
+
+# Python / PyInstaller
+__pycache__/
+*.py[cod]
+*.spec
+
+# Local editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
