@@ -7,13 +7,7 @@ on:
     paths:
       - "installer/**"
       - "release/VERSION"
-      - "patcher.py"
-      - "patcher_build44.py"
-      - "HASHES.json"
-      - "data0/**"
-      - "build44/**"
-      - "gog/**"
-      - "patches/verified/**"
+      - "HASHES_BUILD45.json"
       - ".github/workflows/build-patcher.yml"
 
 jobs:
@@ -26,11 +20,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Read release version
+      - name: Read installer designation
         shell: pwsh
         run: |
-          $version = (Get-Content release/VERSION -Raw).Trim()
-          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          $manifest = Get-Content HASHES_BUILD45.json -Raw | ConvertFrom-Json
+          $designation = [string]$manifest.designation
+          if ($designation -notmatch '^v\d+Pv\d+Sv\d+G$') {
+            throw "Invalid installer designation in HASHES_BUILD45.json: $designation"
+          }
+          $exeName = "COJ_Gunslinger_Patcher_$designation"
+          "DESIGNATION=$designation" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "EXE_NAME=$exeName" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -44,7 +44,7 @@ jobs:
       - name: Generate Windows version metadata
         run: python installer/make_version_info.py
 
-      - name: Build latest cumulative patcher
+      - name: Build standalone patcher
         shell: pwsh
         run: |
           pyinstaller `
@@ -52,25 +52,20 @@ jobs:
             --clean `
             --onefile `
             --console `
-            --name COJ_Gunslinger_Patcher `
+            --name "$env:EXE_NAME" `
             --version-file installer/version_info.txt `
-            --paths . `
-            --add-data "HASHES.json;." `
-            --add-data "data0;data0" `
-            --add-data "build44;build44" `
-            --add-data "gog;gog" `
-            --add-data "patches/verified/CoJGunslinger.build15.cjpd;patches/verified" `
-            --add-data "patches/verified/CoJGunslinger.build44_from_build15.cjpd.b64;patches/verified" `
             installer/COJ_Gunslinger_Patcher.py
 
       - name: SHA-256
         shell: pwsh
-        run: Get-FileHash dist/COJ_Gunslinger_Patcher.exe -Algorithm SHA256 | Format-List
+        run: |
+          $exe = "dist/$env:EXE_NAME.exe"
+          Get-FileHash $exe -Algorithm SHA256 | Format-List
 
       - name: Upload patcher
         uses: actions/upload-artifact@v4
         with:
-          name: COJ_Gunslinger_Patcher_Build${{ env.VERSION }}
-          path: dist/COJ_Gunslinger_Patcher.exe
+          name: ${{ env.EXE_NAME }}
+          path: dist/${{ env.EXE_NAME }}.exe
           if-no-files-found: error
           compression-level: 0
