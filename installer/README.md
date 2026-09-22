@@ -1,30 +1,34 @@
 # Windows patcher
 
-`COJ_Gunslinger_Patcher.exe` is the standalone Windows installer for the cumulative Enhanced PC Patch. The current validated target is **Build 44**.
+`COJ_Gunslinger_Patcher_Build45.exe` is the standalone installer for the cumulative Enhanced PC Patch. Build 45 uses one executable for the supported **Steam and GOG** editions.
 
-## Accepted inputs
+## Detection
 
-- exact original Steam `CoJGunslinger.exe` + `Data0.pak`;
-- exact Enhanced PC Patch Build 15 pair;
-- exact Build 44 pair, detected as already installed.
+The patcher hashes `CoJGunslinger.exe` and `Data0.pak` before modification.
 
-Unknown or mixed files are refused before modification.
+Accepted pairs:
+
+- exact original Steam files;
+- exact Steam Enhanced PC Patch Build 15 files;
+- exact original GOG files;
+- exact current Steam or GOG target, detected as already installed.
+
+Mixed, unknown or previously modified pairs are refused.
+
+## Edition preservation
+
+The Steam path keeps Steam integration and the validated Steam payload.
+
+The GOG path keeps the GOG entry point/platform integration and its four store-specific menu resources. It does not add Steam DRM or Steam-only navigation.
 
 ## Installation safety
 
-The patcher hashes both files first, creates `.Backup` copies only for recognized inputs, reconstructs the target in a temporary directory, verifies the exact Build 44 SHA-256 values, stages the pair, performs transactional replacement, and verifies the installed files again.
+The patcher creates `.Backup` copies only after recognizing a supported pair. It reconstructs the edition-specific target in a temporary directory, verifies exact SHA-256 values, stages both files, keeps a rollback pair during replacement, and verifies the installed files again.
 
-Validated Build 44:
+## Building
 
-- EXE: `125a3b088e502049913d7a6d20f0ad76d7a0e5fe086d14bb257c4d0798ca5844`
-- Data0: `55cab794160a244ef3db3abfa0e3beb23643ebb20c3d95831d0c553905372744`
+`.github/workflows/build-patcher.yml` builds the latest development artifact.
 
-## Building the executable
+`.github/workflows/publish-release.yml` builds the versioned public executable when `release/VERSION` changes.
 
-The repository workflow `.github/workflows/build-patcher.yml` builds the patcher on `windows-latest` with Python 3.12 and PyInstaller.
-
-The generated executable is:
-
-`COJ_Gunslinger_Patcher.exe`
-
-The executable embeds only the reconstruction code, compact patch data and metadata contained in this repository. It does not embed the retail game EXE or retail `Data0.pak`.
+Both workflows use Python 3.12 and PyInstaller. The packaged executable contains reconstruction code and compact patch metadata only. It contains no retail game EXE or retail `Data0.pak`.
