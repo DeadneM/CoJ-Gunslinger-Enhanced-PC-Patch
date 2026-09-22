@@ -1,0 +1,31 @@
+{
+  "format": "COJ_GUNSLINGER_BUILD45_MULTI_EDITION_V1",
+  "build": 45,
+  "note": "Build 45 is the unified Steam + GOG distribution milestone. The validated game payload for each edition is binary-identical to its Build 44 reference.",
+  "steam": {
+    "original": {
+      "CoJGunslinger.exe": "ca1c4766900feb867372e0e2e87eb5adb92ca26ee537598a034ed7be1313d93c",
+      "Data0.pak": "0debd38c1560830486d8f7bdecf3806324e4f6357f1353ea0058b47bdfe8aa3b"
+    },
+    "target": {
+      "CoJGunslinger.exe": "125a3b088e502049913d7a6d20f0ad76d7a0e5fe086d14bb257c4d0798ca5844",
+      "Data0.pak": "55cab794160a244ef3db3abfa0e3beb23643ebb20c3d95831d0c553905372744"
+    }
+  },
+  "gog": {
+    "original": {
+      "CoJGunslinger.exe": "c061b0cd177c04e9ae30bdd5b8693caff2c2474b8f48f8d9c7e2bcd05f817708",
+      "Data0.pak": "7c5b83bc26a703abe4a55d460b73d0248168d16e7b2998d0d6e8a45244a03e60"
+    },
+    "target": {
+      "CoJGunslinger.exe": "c0cc2bcb760e5b6fff9e6f0ab5e4ccf3acec5859f08f11a77339f551501a45e4",
+      "Data0.pak": "601fdb9311635352af663b7c10959b263f5650a463f4dc20f1b54b390273d62b"
+    },
+    "exe_delta": {
+      "path": "gog/build44/CoJGunslinger.gog44.cjpgz.b64",
+      "decoded_size": 4086,
+      "decoded_sha256": "ed227ede4f678b118756f725d2f2013c3eb9f6e9ee11e68d08c3da5f59d5780e"
+    },
+    "data0": "Uses the common deterministic semantic reconstruction. The four GOG-only menu resources remain untouched."
+  }
+}
