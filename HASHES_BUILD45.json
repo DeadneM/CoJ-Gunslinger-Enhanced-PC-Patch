@@ -1,31 +1,110 @@
 {
-  "format": "COJ_GUNSLINGER_BUILD45_MULTI_EDITION_V1",
-  "build": 45,
-  "note": "Build 45 is the unified Steam + GOG distribution milestone. The validated game payload for each edition is binary-identical to its Build 44 reference.",
-  "steam": {
-    "original": {
-      "CoJGunslinger.exe": "ca1c4766900feb867372e0e2e87eb5adb92ca26ee537598a034ed7be1313d93c",
-      "Data0.pak": "0debd38c1560830486d8f7bdecf3806324e4f6357f1353ea0058b47bdfe8aa3b"
-    },
-    "target": {
-      "CoJGunslinger.exe": "125a3b088e502049913d7a6d20f0ad76d7a0e5fe086d14bb257c4d0798ca5844",
-      "Data0.pak": "55cab794160a244ef3db3abfa0e3beb23643ebb20c3d95831d0c553905372744"
+  "format": "COJ_GUNSLINGER_MULTI_EDITION_DIRECT_V2",
+  "designation": "v2Pv45Sv45G",
+  "versions": {
+    "patcher": 2,
+    "steam": 45,
+    "gog": 45
+  },
+  "note": "Steam v45 and GOG v45 are binary-identical to their respective validated Build 44 gameplay references. Patcher v2 uses embedded direct COJDP1 deltas and does not use the historical staged reconstruction chain at runtime.",
+  "patch_format": {
+    "magic": "COJDP1",
+    "compression": "zlib",
+    "embedding": "installer/COJ_Gunslinger_Patcher.py::PATCH_B64",
+    "source_verification": "size + SHA-256",
+    "target_verification": "size + SHA-256",
+    "operations": {
+      "0": "copy source range",
+      "1": "append literal bytes"
     }
   },
+  "steam": {
+    "retail": {
+      "CoJGunslinger.exe": {
+        "sha256": "ca1c4766900feb867372e0e2e87eb5adb92ca26ee537598a034ed7be1313d93c",
+        "size": 23197992
+      },
+      "Data0.pak": {
+        "sha256": "0debd38c1560830486d8f7bdecf3806324e4f6357f1353ea0058b47bdfe8aa3b",
+        "size": 9343518
+      }
+    },
+    "build15": {
+      "CoJGunslinger.exe": {
+        "sha256": "b468197ddcba6547db8dda2efc3cd29f524f57992756aa813142b5531b2fd78d",
+        "size": 23203840
+      },
+      "Data0.pak": {
+        "sha256": "ffa18821657e8f25063897a28730a03fb962abf22d572fb3d4fdd83772db0eab",
+        "size": 9350103
+      }
+    },
+    "target_v45": {
+      "CoJGunslinger.exe": {
+        "sha256": "125a3b088e502049913d7a6d20f0ad76d7a0e5fe086d14bb257c4d0798ca5844",
+        "size": 23203840
+      },
+      "Data0.pak": {
+        "sha256": "55cab794160a244ef3db3abfa0e3beb23643ebb20c3d95831d0c553905372744",
+        "size": 9350117
+      }
+    },
+    "direct_routes": [
+      {
+        "source": "retail",
+        "exe_delta": "steam_retail_exe.cojdp1.zlib.b64",
+        "data0_delta": "steam_retail_data0.cojdp1.zlib.b64",
+        "target": "target_v45"
+      },
+      {
+        "source": "build15",
+        "exe_delta": "steam_build15_exe.cojdp1.zlib.b64",
+        "data0_delta": "steam_build15_data0.cojdp1.zlib.b64",
+        "target": "target_v45"
+      }
+    ]
+  },
   "gog": {
-    "original": {
-      "CoJGunslinger.exe": "c061b0cd177c04e9ae30bdd5b8693caff2c2474b8f48f8d9c7e2bcd05f817708",
-      "Data0.pak": "7c5b83bc26a703abe4a55d460b73d0248168d16e7b2998d0d6e8a45244a03e60"
+    "retail": {
+      "CoJGunslinger.exe": {
+        "sha256": "c061b0cd177c04e9ae30bdd5b8693caff2c2474b8f48f8d9c7e2bcd05f817708",
+        "size": 22635816
+      },
+      "Data0.pak": {
+        "sha256": "7c5b83bc26a703abe4a55d460b73d0248168d16e7b2998d0d6e8a45244a03e60",
+        "size": 9344425
+      }
     },
-    "target": {
-      "CoJGunslinger.exe": "c0cc2bcb760e5b6fff9e6f0ab5e4ccf3acec5859f08f11a77339f551501a45e4",
-      "Data0.pak": "601fdb9311635352af663b7c10959b263f5650a463f4dc20f1b54b390273d62b"
+    "target_v45": {
+      "CoJGunslinger.exe": {
+        "sha256": "c0cc2bcb760e5b6fff9e6f0ab5e4ccf3acec5859f08f11a77339f551501a45e4",
+        "size": 23203840
+      },
+      "Data0.pak": {
+        "sha256": "601fdb9311635352af663b7c10959b263f5650a463f4dc20f1b54b390273d62b",
+        "size": 9351024
+      }
     },
-    "exe_delta": {
-      "path": "gog/build44/CoJGunslinger.gog44.cjpgz.b64",
-      "decoded_size": 4086,
-      "decoded_sha256": "ed227ede4f678b118756f725d2f2013c3eb9f6e9ee11e68d08c3da5f59d5780e"
-    },
-    "data0": "Uses the common deterministic semantic reconstruction. The four GOG-only menu resources remain untouched."
+    "direct_routes": [
+      {
+        "source": "retail",
+        "exe_delta": "gog_retail_exe.cojdp1.zlib.b64",
+        "data0_delta": "gog_retail_data0.cojdp1.zlib.b64",
+        "target": "target_v45"
+      }
+    ],
+    "platform_preservation": {
+      "steam_bind_code_copied": false,
+      "gog_entry_point_preserved": true,
+      "gog_platform_integration_preserved": true,
+      "gog_specific_menu_resources_preserved": 4
+    }
+  },
+  "legacy": {
+    "active_runtime_dependency": false,
+    "archive": "legacy/",
+    "retired_gog_cjpg1": "legacy/gog-cjpg1/",
+    "historical_build15_chain": "legacy/build15/",
+    "historical_build44_chain": "legacy/build44/"
   }
 }
