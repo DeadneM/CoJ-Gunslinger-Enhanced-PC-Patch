@@ -1,0 +1,97 @@
+name: Publish Patcher Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "release/VERSION"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read and validate release version
+        shell: pwsh
+        run: |
+          $version = (Get-Content release/VERSION -Raw).Trim()
+          if ($version -notmatch '^\d+$') { throw "release/VERSION must contain an integer build number." }
+          $source = Get-Content installer/COJ_Gunslinger_Patcher.py -Raw
+          if ($source -notmatch "LATEST_BUILD\s*=\s*$version(\D|$)") {
+            throw "release/VERSION ($version) does not match LATEST_BUILD in the patcher."
+          }
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "TAG=v$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Install PyInstaller
+        run: python -m pip install --disable-pip-version-check pyinstaller==6.16.0
+
+      - name: Generate Windows version metadata
+        run: python installer/make_version_info.py
+
+      - name: Build release executable
+        shell: pwsh
+        run: |
+          $name = "COJ_Gunslinger_Patcher_Build$env:VERSION"
+          pyinstaller `
+            --noconfirm `
+            --clean `
+            --onefile `
+            --console `
+            --name $name `
+            --version-file installer/version_info.txt `
+            --paths . `
+            --add-data "HASHES.json;." `
+            --add-data "data0;data0" `
+            --add-data "build44;build44" `
+            --add-data "patches/verified/CoJGunslinger.build15.cjpd;patches/verified" `
+            --add-data "patches/verified/CoJGunslinger.build44_from_build15.cjpd.b64;patches/verified" `
+            installer/COJ_Gunslinger_Patcher.py
+
+      - name: Create SHA-256 manifest
+        shell: pwsh
+        run: |
+          $exe = "dist/COJ_Gunslinger_Patcher_Build$env:VERSION.exe"
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  COJ_Gunslinger_Patcher_Build$env:VERSION.exe" | Set-Content dist/SHA256SUMS.txt -Encoding ascii
+          Get-Content dist/SHA256SUMS.txt
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = "dist/COJ_Gunslinger_Patcher_Build$env:VERSION.exe"
+          $notes = @"
+          # Enhanced PC Patch Build $env:VERSION
+
+          Cumulative Windows patcher for Call of Juarez: Gunslinger.
+
+          - Target: validated Build $env:VERSION
+          - Verifies supported input hashes before modification
+          - Creates backups before installation
+          - Verifies the reconstructed output before and after replacement
+          - Source and build workflow are included in this repository
+
+          The patcher contains no retail game executable or Data0.pak.
+          "@
+
+          gh release view $env:TAG --repo ${{ github.repository }} *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:TAG $exe dist/SHA256SUMS.txt --clobber --repo ${{ github.repository }}
+          } else {
+            gh release create $env:TAG $exe dist/SHA256SUMS.txt --repo ${{ github.repository }} --target ${{ github.sha }} --title "Enhanced PC Patch Build $env:VERSION" --notes $notes
+          }
