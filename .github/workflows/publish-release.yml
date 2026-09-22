@@ -2,10 +2,6 @@ name: Publish Patcher Release
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "release/PUBLISH"
 
 permissions:
   contents: write
@@ -37,9 +33,6 @@ jobs:
           if ($source -notmatch "PATCHER_VERSION\s*=\s*$patcher(\D|$)") { throw "PATCHER_VERSION in installer source does not match manifest." }
           if ($source -notmatch "STEAM_VERSION\s*=\s*$steam(\D|$)") { throw "STEAM_VERSION in installer source does not match manifest." }
           if ($source -notmatch "GOG_VERSION\s*=\s*$gog(\D|$)") { throw "GOG_VERSION in installer source does not match manifest." }
-
-          $publishRequest = (Get-Content release/PUBLISH -Raw).Trim()
-          if ($publishRequest -ne $designation) { throw "release/PUBLISH mismatch: expected $designation, got $publishRequest" }
 
           $exeName = "COJ_Gunslinger_Patcher_$designation"
           "DESIGNATION=$designation" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
