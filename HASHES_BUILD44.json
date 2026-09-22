@@ -20,10 +20,6 @@
     "Data0.pak": {
       "sha256": "55cab794160a244ef3db3abfa0e3beb23643ebb20c3d95831d0c553905372744",
       "size": 9350117
-    },
-    "COJ_Gunslinger_44.zip": {
-      "sha256": "2f2360a7859c80c0b9cfa93d0959f5da4ad69d4a0921afb75c9d3e0ce30551b5",
-      "size": 18883338
     }
   },
   "exe_overlay": {
