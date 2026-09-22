@@ -2,9 +2,17 @@
 
 Source repository for the **Enhanced PC Patch** for *Call of Juarez: Gunslinger*.
 
-The current cumulative release is **Build 45** and supports the verified **Steam and GOG** editions with one Windows patcher. The patcher identifies the edition by SHA-256 before modifying anything and preserves the platform-specific files and behavior of that edition.
+The current validated game payload is **Steam v45 / GOG v45**. The unified installer is now versioned independently from the game payloads.
 
-> Build 45 is the unified Steam + GOG distribution milestone. The validated game payloads are binary-identical to their respective Build 44 references; no previously validated game-code fix was changed for this release.
+Current version designation:
+
+`v2Pv45Sv45G`
+
+- `v2P` = patcher generation 2
+- `v45S` = Steam payload v45
+- `v45G` = GOG payload v45
+
+> Steam v45 and GOG v45 are binary-identical to their respective validated Build 44 gameplay references. The v45 milestone unified distribution only; it did not change the validated game-code payload.
 
 ## What the patch improves
 
@@ -33,9 +41,17 @@ The patch intentionally preserves unrelated game behavior instead of applying br
 
 ## Installation
 
-1. Place `COJ_Gunslinger_Patcher_Build45.exe` next to `CoJGunslinger.exe` in the game directory.
-2. Run the patcher.
-3. It locates `coj4/Data0.pak` (or `Data0.pak` beside the EXE), hashes both files, detects Steam or GOG, creates backups, reconstructs the matching target, verifies it, and installs it.
+The current validated installer logic:
+
+1. is placed next to `CoJGunslinger.exe`;
+2. locates `coj4/Data0.pak` or `Data0.pak` beside the EXE;
+3. hashes both source files;
+4. accepts only an exact supported Steam or GOG pair;
+5. creates backups;
+6. applies the matching embedded `COJDP1` direct deltas;
+7. verifies the reconstructed target before installation;
+8. stages and installs both files;
+9. verifies the installed hashes again.
 
 Accepted sources:
 
@@ -53,76 +69,90 @@ The Windows patcher is built from this repository with PyInstaller.
 It:
 
 - contains no retail game executable or retail `Data0.pak`;
+- contains compact binary deltas only;
 - does not download game files;
 - does not require network access;
 - does not install a service or driver;
 - does not request administrator privileges itself;
 - modifies only a recognized local game pair;
+- verifies the exact source SHA-256 before applying a direct delta;
 - creates `.Backup` copies before installation;
 - reconstructs and verifies the new pair before replacement;
 - keeps a temporary rollback pair during replacement;
 - verifies the installed hashes one final time.
 
-Because the tool patches an executable and a game archive, automated malware scanners may treat the packaged patcher conservatively. The complete reconstruction source and GitHub Actions build workflow are provided for review.
+Because the tool patches an executable and a game archive, automated malware scanners may treat the packaged patcher conservatively. The complete installer source and GitHub Actions build workflow are provided for review.
 
-## Patcher versioning
+## Versioning
 
-Patcher versions follow the cumulative integer build number.
+The installer and the two game payloads are versioned independently.
 
-For the current release:
+Format:
 
-- GitHub Release tag: `v45`
-- release asset: `COJ_Gunslinger_Patcher_Build45.exe`
-- Windows file/product version: `Build 45`
-- console header: `Latest cumulative build: 45 | Steam + GOG`
+`v<PATCHER>Pv<STEAM>Sv<GOG>G`
 
-The source-of-truth release number is `release/VERSION`. Changing that file publishes a new release; ordinary source/documentation commits do not.
+Current designation:
 
-## Validated Build 45 hashes
+`v2Pv45Sv45G`
+
+This prevents a packaging-only patcher revision from pretending that the Steam or GOG gameplay payload changed.
+
+The existing public v45 release/tag belongs to the older Build-number naming scheme and will be cleaned up only after the final patcher step.
+
+## Validated v45 hashes
 
 ### Steam
 
-| File | Original Steam | Build 45 target |
+| File | Original Steam | Steam v45 target |
 | --- | --- | --- |
 | `CoJGunslinger.exe` | `ca1c4766900feb867372e0e2e87eb5adb92ca26ee537598a034ed7be1313d93c` | `125a3b088e502049913d7a6d20f0ad76d7a0e5fe086d14bb257c4d0798ca5844` |
 | `Data0.pak` | `0debd38c1560830486d8f7bdecf3806324e4f6357f1353ea0058b47bdfe8aa3b` | `55cab794160a244ef3db3abfa0e3beb23643ebb20c3d95831d0c553905372744` |
 
 ### GOG
 
-| File | Original GOG | Build 45 target |
+| File | Original GOG | GOG v45 target |
 | --- | --- | --- |
 | `CoJGunslinger.exe` | `c061b0cd177c04e9ae30bdd5b8693caff2c2474b8f48f8d9c7e2bcd05f817708` | `c0cc2bcb760e5b6fff9e6f0ab5e4ccf3acec5859f08f11a77339f551501a45e4` |
 | `Data0.pak` | `7c5b83bc26a703abe4a55d460b73d0248168d16e7b2998d0d6e8a45244a03e60` | `601fdb9311635352af663b7c10959b263f5650a463f4dc20f1b54b390273d62b` |
 
 See `HASHES_BUILD45.json` for the machine-readable manifest.
 
-## Reproducibility
+## Current reconstruction architecture
 
-The common Data0 reconstruction remains semantic and deterministic. The original Steam and GOG archives have the same 1774-entry layout. Their source local records differ in only four GOG-specific menu resources, none of which belongs to the 19-resource patch set. The common recipe therefore rebuilds the modified resources while leaving those four GOG records untouched.
+The active installer no longer uses the historical semantic Build 15 -> Build 44 chain at runtime.
 
-The GOG executable uses its own compact verified delta in:
+It embeds **six independent direct COJDP1 deltas**:
 
-`gog/build44/CoJGunslinger.gog44.cjpgz.b64`
+- Steam retail EXE -> Steam v45 EXE
+- Steam retail Data0 -> Steam v45 Data0
+- Steam Build 15 EXE -> Steam v45 EXE
+- Steam Build 15 Data0 -> Steam v45 Data0
+- GOG retail EXE -> GOG v45 EXE
+- GOG retail Data0 -> GOG v45 Data0
+
+Each COJDP1 stream contains the expected source size/SHA-256 and target size/SHA-256. The installer also performs its own edition-level hash checks before and after installation.
+
+### GOG target provenance
 
 The validated GOG PE layout keeps the GOG entry point and platform integration. An inert zero-filled padding section reserves the address range absent without Steam's `.bind` section, allowing the common validated `.mod` payload to retain its established addresses without copying Steam DRM code.
+
+The original Steam and GOG `Data0.pak` archives both contain 1774 entries. They differ in four GOG-specific menu resources, none of which belongs to the 19-resource gameplay patch set. The validated GOG v45 target therefore preserves those GOG-specific resources.
 
 ## Repository layout
 
 ```text
 .github/workflows/          Windows build and release workflows
-installer/                  Unified Steam + GOG patcher source
-patches/verified/           Verified Steam EXE deltas
-gog/build44/                Verified GOG EXE reconstruction delta
-data0/                      Common deterministic Data0 recipes/metadata
-build44/                    Validated current Data0 overlay
-patcher.py                  Retail -> internal Build 15 reconstruction
-patcher_build44.py          Internal Build 15 -> validated payload
+installer/                  Active unified Steam + GOG patcher source
+legacy/                     Retired reconstruction chains kept for audit/history
 HASHES_BUILD45.json         Current Steam + GOG integrity manifest
-docs/TECHNICAL_NOTES.md     Validated implementation notes
+docs/TECHNICAL_NOTES.md     Validated implementation and lineage notes
+release/                    Release metadata
 ```
+
+The older root-level reconstruction files are temporarily retained while the cleanup is performed step by step. Their authoritative historical copies are now under `legacy/`; they are not part of the active installer architecture.
 
 Packaged mod ZIPs and retail game files are intentionally **not stored in this repository**. Public binaries are published through GitHub Releases / Nexus Mods.
 
 ## Technical notes
 
-See `docs/TECHNICAL_NOTES.md` for the retained native hooks and implementation details.
+See `docs/TECHNICAL_NOTES.md` for the retained native hooks, payload lineage and distribution architecture.
