@@ -12,6 +12,7 @@ on:
       - "HASHES.json"
       - "data0/**"
       - "build44/**"
+      - "gog/**"
       - "patches/verified/**"
       - ".github/workflows/build-patcher.yml"
 
@@ -57,6 +58,7 @@ jobs:
             --add-data "HASHES.json;." `
             --add-data "data0;data0" `
             --add-data "build44;build44" `
+            --add-data "gog;gog" `
             --add-data "patches/verified/CoJGunslinger.build15.cjpd;patches/verified" `
             --add-data "patches/verified/CoJGunslinger.build44_from_build15.cjpd.b64;patches/verified" `
             installer/COJ_Gunslinger_Patcher.py
