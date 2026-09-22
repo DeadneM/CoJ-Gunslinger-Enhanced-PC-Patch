@@ -117,7 +117,24 @@ def build_steam_from_build15(
 
 
 def apply_gog_exe_patch(source: bytes, patch_b64: str) -> bytes:
-    raw = zlib.decompress(base64.b64decode(patch_b64))
+    packed = base64.b64decode(patch_b64)
+    try:
+        raw = zlib.decompress(packed)
+    except zlib.error as exc:
+        # The verified GOG delta currently carries a bad zlib Adler-32 trailer.
+        # Its DEFLATE payload is still usable. Fall back only for that exact
+        # wrapper-check failure, then rely on the strict CJPG1 parser and the
+        # final edition-specific SHA-256 verification before installation.
+        if "incorrect data check" not in str(exc):
+            raise
+        if (
+            len(packed) < 6
+            or (packed[0] & 0x0F) != 8
+            or ((packed[0] << 8) | packed[1]) % 31 != 0
+        ):
+            raise ValueError("Invalid GOG EXE zlib wrapper") from exc
+        raw = zlib.decompress(packed[2:-4], -zlib.MAX_WBITS)
+
     if raw[:5] != b"CJPG1":
         raise ValueError("Invalid GOG EXE patch format")
     pos = 5
