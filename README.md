@@ -1,5 +1,14 @@
 # Call of Juarez: Gunslinger - Enhanced PC Patch
 
+<p align="center">
+  <img src="images/gunslinger-enhanced-pc-patch-banner.jpg" alt="Call of Juarez: Gunslinger Enhanced PC Patch banner">
+</p>
+
+<p align="center">
+  <img src="images/gunslinger-enhanced-pc-patch-cover.jpg" alt="Call of Juarez: Gunslinger Enhanced PC Patch cover" width="520">
+</p>
+
+
 Source repository for the **Enhanced PC Patch** for *Call of Juarez: Gunslinger*.
 
 The current validated game payload is **Steam v45 / GOG v45**. The unified installer is now versioned independently from the game payloads.
